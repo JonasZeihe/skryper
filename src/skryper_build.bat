@@ -1,0 +1,1 @@
+pyinstaller --onefile --name skryper --specpath . main.py

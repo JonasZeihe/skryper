@@ -1,1 +1,0 @@
-python structure_scanner.py
