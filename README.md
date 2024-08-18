@@ -1,7 +1,3 @@
-Hier ist eine erweiterte Version der README-Datei mit Tags, die das Projekt besser auffindbar machen:
-
----
-
 # Skryper
 
 ![Skryper Logo](./images/skryper_logo.png)
