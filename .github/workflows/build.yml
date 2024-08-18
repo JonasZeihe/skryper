@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -54,8 +57,6 @@ jobs:
           files: skryper.exe
           tag_name: "v${{ github.run_id }}-${{ github.run_number }}"
           name: "Release ${{ github.run_id }}-${{ github.run_number }}"
-          body: "Automated release of skryper version ${{ github.run_id }}-${{ github.run_number }}."
-          draft: false
-          prerelease: false
+          body: "Automated release of skryper version ${{ github.run_id }}-${{ github.run_number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
