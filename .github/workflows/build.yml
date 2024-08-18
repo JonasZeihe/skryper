@@ -2,8 +2,8 @@ name: Build and Release skryper
 
 on:
   push:
-    tags:
-      - "v*.*.*"
+    branches:
+      - main
 
 jobs:
   build:
@@ -47,11 +47,10 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: skryper-exe/skryper.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        args:
-          tag_name: ${{ github.ref_name }} # Use the tag name as the release name
-          release_name: "Release ${{ github.ref_name }}" # Provide a clear and descriptive release name
-          body: "Automated release of skryper version ${{ github.ref_name }}."
+          tag_name: "v${{ github.run_id }}-${{ github.run_number }}"
+          release_name: "Release ${{ github.run_id }}-${{ github.run_number }}"
+          body: "Automated release of skryper version ${{ github.run_id }}-${{ github.run_number }}."
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
