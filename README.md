@@ -34,12 +34,6 @@ Skryper was developed to conduct an in-depth analysis of directory structures, i
    - Download the release and extract it to a directory of your choice.
    - Ensure that Python 3.x is installed on your system. If not, download it from [python.org](https://www.python.org/).
 
-3. **Install Dependencies**
-   - Install all necessary Python dependencies with the following command:
-     ```bash
-     pip install -r requirements.txt
-     ```
-
 ## Development
 
 If you are interested in contributing to Skryper or wish to modify it for your own purposes, you can set up a development environment by following these steps:
