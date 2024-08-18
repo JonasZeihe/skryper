@@ -23,9 +23,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
 
+      - name: Generate .spec file
+        run: |
+          pyinstaller --name skryper --onefile --specpath src --noconfirm main.py
+        shell: cmd
+
       - name: Build executable with PyInstaller
         run: |
-          pyinstaller --onefile --name skryper --specpath src src/skryper.spec
+          pyinstaller src/skryper.spec
         shell: cmd
 
       - name: Upload artifact
@@ -47,8 +52,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: skryper-exe/skryper.exe
-          tag_name: "v${{ github.run_id }}-${{ github.run_number }}"
-          release_name: "Release ${{ github.run_id }}-${{ github.run_number }}"
+          tag_name: "v${{ github.run_id }}-${{ github.run_number }}" # Use the GitHub run ID and number as the tag name
+          release_name: "Release ${{ github.run_id }}-${{ github.run_number }}" # Provide a clear and descriptive release name
           body: "Automated release of skryper version ${{ github.run_id }}-${{ github.run_number }}."
           draft: false
           prerelease: false
