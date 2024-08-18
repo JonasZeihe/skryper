@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: skryper-exe
-          path: src/dist/skryper.exe
+          path: dist/skryper.exe
 
   release:
     needs: build
@@ -52,7 +52,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: skryper-exe/skryper.exe
-          tag_name: "v${{ github.run_id }}-${{ github.run_number }}" #
+          tag_name: "v${{ github.run_id }}-${{ github.run_number }}"
           release_name: "Release ${{ github.run_id }}-${{ github.run_number }}"
           body: "Automated release of skryper version ${{ github.run_id }}-${{ github.run_number }}."
           draft: false
