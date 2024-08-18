@@ -1,3 +1,10 @@
+"""
+Entry point for the directory scanning application.
+
+This module scans the current directory's structure and saves the output to a 
+timestamped file.
+"""
+
 from pathlib import Path
 from datetime import datetime
 import os

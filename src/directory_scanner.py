@@ -1,6 +1,10 @@
+"""
+This module provides functionality to recursively scan directories,
+considering .gitignore files and excluding specified files or directories.
+"""
+
 from pathlib import Path
 import os
-from typing import List
 from config import DirectoryScannerConfig
 from gitignore_handler import load_gitignore, is_ignored
 
@@ -10,6 +14,11 @@ def scan_directory(
 ) -> None:
     """
     Recursively scans a directory and records its structure, considering .gitignore files.
+
+    Args:
+        directory (Path): The directory to scan.
+        config (DirectoryScannerConfig): The configuration for the scan, including excluded files and gitignore paths.
+        prefix (str, optional): A prefix used for formatting the output. Defaults to an empty string.
     """
     gitignore_path = directory / ".gitignore"
     current_ignored_paths = config.base_gitignore_paths.copy()
