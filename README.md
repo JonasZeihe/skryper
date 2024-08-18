@@ -103,7 +103,3 @@ With Skryper, you maintain control over your project structure, optimize your wo
 - **Project Organization**
 - **Workflow Optimization**
 - **Structra Integration**
-
----
-
-Diese Tags und die zusätzlichen Abschnitte über die Integration mit Structra und AI-aided Development machen das Projekt leichter auffindbar und geben potenziellen Nutzern und Mitwirkenden einen klaren Überblick über die Ziele und Funktionen von Skryper.
