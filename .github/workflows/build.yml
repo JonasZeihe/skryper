@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: skryper-exe
-          path: src/dist/skryper.exe
+          path: dist/skryper.exe
 
   release:
     needs: build
