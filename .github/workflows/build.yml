@@ -51,7 +51,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: skryper-exe/skryper.exe
+          files: skryper.exe
           tag_name: "v${{ github.run_id }}-${{ github.run_number }}"
           name: "Release ${{ github.run_id }}-${{ github.run_number }}"
           body: "Automated release of skryper version ${{ github.run_id }}-${{ github.run_number }}."
