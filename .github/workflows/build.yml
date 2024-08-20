@@ -55,6 +55,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: skryper-exe
+          path: dist/skryper_${{ env.BUILD_DATE }}.exe
 
       - name: Get current date
         id: date
