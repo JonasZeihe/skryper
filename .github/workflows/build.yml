@@ -26,26 +26,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
 
-      - name: Get current date
-        id: get-date
-        run: echo "BUILD_DATE=$(date +'%Y_%m_%d')" >> $GITHUB_ENV
-        shell: bash
-
       - name: Generate .spec file
         run: |
-          pyinstaller --name skryper_${{ env.BUILD_DATE }} --onefile --specpath src --noconfirm src/main.py
+          pyinstaller --name skryper --onefile --specpath src --noconfirm src/main.py
         shell: cmd
 
       - name: Build executable with PyInstaller
         run: |
-          pyinstaller src/skryper_${{ env.BUILD_DATE }}.spec
+          pyinstaller src/skryper.spec
         shell: cmd
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: skryper-exe
-          path: dist/skryper_${{ env.BUILD_DATE }}.exe
+          path: dist/skryper.exe
 
   release:
     needs: build
@@ -64,7 +59,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: skryper_${{ env.BUILD_DATE }}.exe
+          files: dist/skryper.exe
           tag_name: "v1.0-${{ env.RELEASE_DATE }}"
           name: "Release v1.0 - ${{ env.RELEASE_DATE }}"
           body: "Automated release of skryper on ${{ env.RELEASE_DATE }}"
