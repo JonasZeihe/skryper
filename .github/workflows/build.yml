@@ -26,21 +26,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
 
+      - name: Get current date
+        id: date
+        run: echo "BUILD_DATE=$(date +'%Y_%m_%d')" >> $GITHUB_ENV
+
       - name: Generate .spec file
         run: |
-          pyinstaller --name skryper --onefile --specpath src --noconfirm src/main.py
+          pyinstaller --name skryper_${{ env.BUILD_DATE }} --onefile --specpath src --noconfirm src/main.py
         shell: cmd
 
       - name: Build executable with PyInstaller
         run: |
-          pyinstaller src/skryper.spec
+          pyinstaller src/skryper_${{ env.BUILD_DATE }}.spec
         shell: cmd
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: skryper-exe
-          path: dist/skryper.exe
+          path: dist/skryper_${{ env.BUILD_DATE }}.exe
 
   release:
     needs: build
@@ -54,9 +58,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: skryper.exe
-          tag_name: "v${{ github.run_id }}-${{ github.run_number }}"
-          name: "Release ${{ github.run_id }}-${{ github.run_number }}"
-          body: "Automated release of skryper version ${{ github.run_id }}-${{ github.run_number }}"
+          files: skryper_${{ env.BUILD_DATE }}.exe
+          tag_name: "v1.0-${{ env.BUILD_DATE }}"
+          name: "Release v1.0 - ${{ env.BUILD_DATE }}"
+          body: "Automated release of skryper on ${{ env.BUILD_DATE }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
