@@ -27,10 +27,9 @@ jobs:
           pip install pyinstaller
 
       - name: Get current date
-        id: date
         run: |
-          BUILD_DATE=$(date +'%Y_%m_%d')
-          echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
+          $BUILD_DATE = Get-Date -Format "yyyy_MM_dd"
+          echo "BUILD_DATE=$BUILD_DATE" >> $env:GITHUB_ENV
 
       - name: Generate .spec file
         run: |
