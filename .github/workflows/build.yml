@@ -55,7 +55,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: skryper-exe
-          path: dist/skryper_${{ env.BUILD_DATE }}.exe
 
       - name: Get current date
         id: date
@@ -65,7 +64,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/skryper_${{ env.BUILD_DATE }}.exe
+          files: skryper_${{ env.BUILD_DATE }}.exe
           tag_name: "v1.0-${{ env.RELEASE_DATE }}"
           name: "Release v1.0 - ${{ env.RELEASE_DATE }}"
           body: "Automated release of skryper on ${{ env.RELEASE_DATE }}"
