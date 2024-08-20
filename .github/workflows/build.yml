@@ -51,17 +51,12 @@ jobs:
         with:
           name: skryper-exe
 
-      - name: Get current date
-        id: date
-        run: echo "RELEASE_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-        shell: bash
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/skryper.exe
-          tag_name: "v1.0-${{ env.RELEASE_DATE }}"
-          name: "Release v1.0 - ${{ env.RELEASE_DATE }}"
-          body: "Automated release of skryper on ${{ env.RELEASE_DATE }}"
+          files: skryper.exe
+          tag_name: "v${{ github.run_id }}-${{ github.run_number }}"
+          name: "Release ${{ github.run_id }}-${{ github.run_number }}"
+          body: "Automated release of skryper version ${{ github.run_id }}-${{ github.run_number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
