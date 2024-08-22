@@ -12,7 +12,7 @@ import ctypes
 from config import DirectoryScannerConfig
 from directory_scanner import scan_directory
 from gitignore_handler import load_gitignore
-from logger import setup_logger
+from logger import setup_logger, save_logs_to_file
 
 
 def main():
@@ -22,7 +22,7 @@ def main():
     if os.name == "nt":
         ctypes.windll.kernel32.SetConsoleOutputCP(65001)
 
-    logger = setup_logger(Path.cwd())
+    logger, log_stream = setup_logger()
 
     config = DirectoryScannerConfig()
     config.base_gitignore_paths = load_gitignore(Path(".gitignore"))
@@ -43,6 +43,8 @@ def main():
 
     logger.info("Directory structure saved to '%s'", config.output_filename)
     print(f"Directory structure saved to {config.output_filename}")
+
+    save_logs_to_file(log_stream, Path.cwd())
 
 
 if __name__ == "__main__":
