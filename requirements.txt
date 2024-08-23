@@ -1,6 +1,9 @@
-ctypes; sys_platform == 'win32'
-pathlib
-datetime
-logging
-dataclasses
-pyinstaller
+# External packages
+pyinstaller  # Required for building the standalone executable
+
+# Standard library modules (included for clarity, but these do not need to be installed)
+# - ctypes (used for setting console output encoding on Windows)
+# - pathlib (used for file and directory path manipulations)
+# - datetime (used for handling timestamps)
+# - logging (used for application logging)
+# - dataclasses (used for configuration data structures)

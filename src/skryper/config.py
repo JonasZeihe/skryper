@@ -1,6 +1,12 @@
 """
-Configuration for the directory scanner.
+This module defines the configuration for the directory scanner.
+
+The configuration includes rules for ignoring specific files and directories,
+inclusion rules to override ignore patterns, and other settings required 
+during the directory scanning process.
 """
+
+# config.py
 
 from dataclasses import dataclass, field
 from typing import Set, List
@@ -9,14 +15,7 @@ from typing import Set, List
 @dataclass
 class DirectoryScannerConfig:
     """
-    Configuration for directory scanning.
-
-    Attributes:
-        base_gitignore_paths: Paths to gitignore files.
-        excluded_files: Files and directories to exclude.
-        inclusion_rules: Files and directories to include regardless of .gitignore rules.
-        output_filename: Output file name.
-        result: Scanning results.
+    A configuration class for controlling the behavior of the directory scanner.
     """
 
     base_gitignore_paths: Set[str] = field(default_factory=set)
