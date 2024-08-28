@@ -2,7 +2,9 @@ import unittest
 from pathlib import Path
 import os
 import shutil
-from skryper.main import main
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 class TestSkryper(unittest.TestCase):
@@ -20,10 +22,10 @@ class TestSkryper(unittest.TestCase):
 
         (self.test_dir / "file1.txt").write_text("This is a test file.")
         (self.test_dir / "file2.log").write_text("This is a log file.")
-        (self.test_dir / "file4.exe").write_text("This is an executable.")
+        (self.test_dir / "file3.exe").write_text("This is an executable file.")
 
         (self.test_dir / "ignored_dir").mkdir(exist_ok=True)
-        (self.test_dir / "ignored_dir" / "file3.txt").write_text(
+        (self.test_dir / "ignored_dir" / "file4.txt").write_text(
             "This file should be ignored."
         )
 
@@ -36,26 +38,26 @@ class TestSkryper(unittest.TestCase):
         )
 
         (self.test_dir / "nested" / "subnested").mkdir(exist_ok=True)
-        (self.test_dir / "nested" / "subnested" / "file4.txt").write_text(
+        (self.test_dir / "nested" / "subnested" / "file5.txt").write_text(
             "This file should be included."
         )
-        (self.test_dir / "nested" / "subnested" / "file5.log").write_text(
-            "This log should be ignored."
+        (self.test_dir / "nested" / "subnested" / "file6.log").write_text(
+            "This log file should be ignored."
         )
 
         (self.test_dir / "subdir").mkdir(exist_ok=True)
-        (self.test_dir / "subdir" / "file6.txt").write_text(
+        (self.test_dir / "subdir" / "file7.txt").write_text(
             "This file should be ignored."
         )
         (self.test_dir / "subdir" / "another_ignored_dir").mkdir(exist_ok=True)
-        (self.test_dir / "subdir" / "another_ignored_dir" / "file7.txt").write_text(
+        (self.test_dir / "subdir" / "another_ignored_dir" / "file8.txt").write_text(
             "This file should also be ignored."
         )
 
         (self.test_dir / ".gitignore").write_text(
-            "*.log\n/ignored_dir/\n/subdir/\n*.exe"
+            "*.log\n/ignored_dir/\n/subdir/\n*.exe\n"
         )
-        (self.test_dir / "nested" / ".gitignore").write_text("ignored_file.txt")
+        (self.test_dir / "nested" / ".gitignore").write_text("ignored_file.txt\n")
 
         self.original_cwd = Path.cwd()
         os.chdir(self.test_dir)
@@ -84,16 +86,21 @@ class TestSkryper(unittest.TestCase):
 
         self.assertIn("file1.txt", result)
         self.assertNotIn("file2.log", result)
-        self.assertNotIn("file4.exe", result)
+        self.assertNotIn("file3.exe", result)
         self.assertNotIn("ignored_dir/", result)
         self.assertIn("nested/included_file.txt", result)
         self.assertNotIn("nested/ignored_file.txt", result)
-        self.assertIn("nested/subnested/file4.txt", result)
-        self.assertNotIn("nested/subnested/file5.log", result)
+        self.assertIn("nested/subnested/file5.txt", result)
+        self.assertNotIn("nested/subnested/file6.log", result)
         self.assertNotIn("subdir/", result)
+        self.assertNotIn("subdir/another_ignored_dir/", result)
 
         log_files = list(Path(".").glob("*.log"))
         self.assertTrue(len(log_files) > 0, "Log file was not created.")
+        with open(log_files[0], "r", encoding="utf-8") as f:
+            log_content = f.read()
+            self.assertIn("Logger initialized successfully.", log_content)
+            self.assertIn("Directory structure saved", log_content)
 
 
 if __name__ == "__main__":
