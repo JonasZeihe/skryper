@@ -5,34 +5,67 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jonaszeihe/skryper)
 ![Platform](https://img.shields.io/badge/platform-windows-lightgrey.svg)
-![AI-Aided Development](https://img.shields.io/badge/AI--aided%20development-practice%20driven-orange.svg)
+![Logging Available](https://img.shields.io/badge/logging-optional-brightgreen.svg)
+![AI-Aided Development](https://img.shields.io/badge/AI--aided%20development-practice--driven-orange.svg)
 
-**Skryper** is a powerful tool designed to help developers efficiently scan, analyze, and organize their project's file structure while respecting `.gitignore` exclusions. The goal of Skryper is to provide developers with a streamlined way to maintain control over their project files, ensuring that only the relevant files are managed and tracked.
+**Skryper** is a streamlined tool designed to help developers scan, analyze, and organize their project’s file structure while adhering to `.gitignore` rules. Skryper simplifies the task of maintaining an organized and clutter-free codebase, especially in large, collaborative projects.
 
-In the often chaotic world of development, managing files can become cumbersome, especially in large projects with multiple contributors. Skryper steps in to simplify this process, offering a clean and clear view of the file landscape. By focusing on files that matter and excluding those that don't, Skryper aids in creating a more organized and manageable codebase.
+## Overview
 
-Skryper isn't just about scanning directories; it's about enhancing your workflow, reducing clutter, and ensuring that your version control system remains clean and precise. This tool reflects the philosophy of clean code management and efficient project organization, helping developers focus on what truly matters: writing and maintaining quality code.
+In fast-paced development environments, managing files across large projects can become complex and time-consuming. Skryper addresses this challenge by providing a clear view of the file landscape, ensuring that only the relevant files are tracked and managed. By focusing on the files that matter, Skryper helps you maintain a clean, efficient, and manageable codebase.
 
-## Technical Overview
+## Key Features
 
-Skryper was developed to conduct an in-depth analysis of directory structures, identifying all files relevant to a project. The tool considers `.gitignore` files to ensure that only files not excluded by these rules are scanned. This approach allows for more precise file management and better project visibility.
-
-### Key Features
-
-- **Directory Scanning**: Traverses specified directories and lists all relevant files.
-- **Respect for `.gitignore`**: Automatically ignores files excluded by `.gitignore` files.
-- **Logging**: Generates detailed logs, enabling users to trace the scanning process and review the identified files.
+- **Directory Scanning**: Recursively scans directories, generating a clear and organized file structure.
+- **`.gitignore` Compliance**: Honors `.gitignore` rules, automatically excluding files that should not be tracked.
+- **On-Demand Logging**: Logging can be enabled during execution to generate detailed logs for debugging and auditing purposes.
 
 ## Installation
 
-1. **Download**
+1. **Download Skryper**
 
-   - Go to [GitHub Releases](https://github.com/jonaszeihe/skryper/releases) and download the latest version of Skryper.
+   - Visit the [GitHub Releases](https://github.com/jonaszeihe/skryper/releases) page to download the latest version of Skryper.
 
-2. **Installation Instructions**
+2. **Setup**
 
-   - Download the release and extract it to a directory of your choice.
-   - Ensure that Python 3.x is installed on your system. If not, download it from [python.org](https://www.python.org/).
+   - Extract the downloaded archive to a directory of your choice.
+   - Ensure Python 3.x is installed. If not, download it from [python.org](https://www.python.org/).
+
+## Usage
+
+### Basic Usage
+
+To use Skryper, simply run the `skryper.exe` in the directory where you want to scan the file structure.
+
+1. **Running Skryper**:
+
+   - Navigate to the directory containing `skryper.exe`.
+   - Double-click `skryper.exe` or run it via Command Prompt or Git Bash:
+     ```bash
+     ./skryper.exe
+     ```
+   - This will scan the current directory and save the directory structure to a timestamped file.
+
+2. **Enabling Logging**:
+
+   - If you encounter issues or need detailed logs, you can run Skryper with logging enabled:
+     ```bash
+     ./skryper.exe --logging
+     ```
+   - This will scan the directory and additionally save a detailed log file.
+
+### Running from Command Prompt or Git Bash
+
+- Open Command Prompt or Git Bash in the directory where `skryper.exe` is located:
+  - Navigate to the directory:
+    ```cmd
+    cd C:\path\to\skryper
+    ```
+  - Run Skryper with or without logging:
+    ```cmd
+    skryper.exe          # For a normal run
+    skryper.exe --logging # For a run with logging enabled
+    ```
 
 ## Development
 
@@ -77,11 +110,11 @@ If you are interested in contributing to Skryper or wish to modify it for your o
 
 ## Integration with Structra
 
-Skryper is designed to work seamlessly with [Structra](https://github.com/JonasZeihe/structra), another tool available on my GitHub profile. Structra takes the file structure generated by Skryper and visualizes it, providing a comprehensive view of your project's architecture. This integration enhances your ability to understand and manage complex project structures.
+Skryper is designed to work seamlessly with [Structra](https://github.com/JonasZeihe/structra), another tool available on my GitHub profile. Structra takes the file structure generated by Skryper and visualizes it, providing a comprehensive view of your project's architecture.
 
 ## AI-Aided Development
 
-Skryper is an example of AI-aided software design and best practice coding. The entire development process was guided by lints and best practices, ensuring a high-quality codebase. While Skryper does not include automated tests, this decision was intentional to better capture the real-world complexities of file structures and `.gitignore` rules in a development environment.
+Skryper is an example of AI-aided software design and best practice coding. The development process was guided by AI to ensure a high-quality codebase, reflecting real-world complexities of file structures and `.gitignore` rules.
 
 ## License
 
