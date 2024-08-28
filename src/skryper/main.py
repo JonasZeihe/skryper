@@ -69,8 +69,8 @@ def main():
     print(f"Directory structure saved to {config.output_filename}")
 
     if args.logging:
-        save_logs_to_file(log_stream, Path.cwd())
         logger.info("Logs saved successfully.")
+        save_logs_to_file(log_stream, Path.cwd())
         log_stream.close()
 
 

@@ -37,13 +37,16 @@ def scan_directory(directory: Path, config, logger: logging.Logger, prefix=""):
     for index, path in enumerate(entries):
         relative_path = path.relative_to(directory)
 
+        connector = "└── " if index == total_entries - 1 else "├── "
+
         if is_ignored(
             relative_path, current_ignore_patterns, config.inclusion_rules, logger
         ):
-            logger.info(f"Ignored: {relative_path}")
+            if path.is_dir():
+                config.result.append(f"{prefix}{connector}{path.name}/")
+                logger.info(f"Ignored directory indicated: {relative_path}")
             continue
 
-        connector = "└── " if index == total_entries - 1 else "├── "
         if path.is_dir():
             config.result.append(f"{prefix}{connector}{path.name}/")
             logger.debug(f"Entering directory: {path}")

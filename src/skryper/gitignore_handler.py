@@ -29,10 +29,28 @@ def load_gitignore(path: Path, logger: Optional[logging.Logger] = None) -> List[
             for line in file:
                 line = line.strip()
                 if line and not line.startswith("#"):
-                    ignore_patterns.append(line)
+                    normalized_pattern = normalize_gitignore_pattern(line)
+                    ignore_patterns.append(normalized_pattern)
                     if logger:
-                        logger.debug(f"Added ignore pattern: {line}")
+                        logger.debug(f"Added ignore pattern: {normalized_pattern}")
     return ignore_patterns
+
+
+def normalize_gitignore_pattern(pattern: str) -> str:
+    """
+    Normalize .gitignore patterns to ensure consistency in matching.
+
+    Args:
+        pattern (str): The pattern from .gitignore to normalize.
+
+    Returns:
+        str: The normalized pattern.
+    """
+    if pattern.endswith("/"):
+        pattern = pattern.rstrip("/")
+    if pattern.startswith("/"):
+        pattern = pattern.lstrip("/")
+    return pattern
 
 
 def is_ignored(
