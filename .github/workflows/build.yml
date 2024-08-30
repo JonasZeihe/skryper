@@ -28,7 +28,8 @@ jobs:
           pip install -r dev-requirements.txt
 
       - name: Set PYTHONPATH
-        run: echo "::set-env name=PYTHONPATH::$(System.DefaultWorkingDirectory)/src"
+        run: |
+          echo PYTHONPATH=D:/a/skryper/skryper/src >> $GITHUB_ENV
 
       - name: Run Tests
         run: |
