@@ -56,8 +56,9 @@ jobs:
 
       - name: Rename executable with version and date
         run: |
-          $currentDate = (Get-Date -Format "yyyy-MM-dd")
-          Rename-Item "dist/skryper.exe" "dist/${currentDate}_skryper.exe"
+          $currentDate = Get-Date -Format "yyyy-MM-dd"
+          $newFileName = "dist/$currentDate`_skryper.exe"
+          Rename-Item "dist/skryper.exe" $newFileName
         shell: pwsh
 
       - name: Upload artifact
@@ -69,6 +70,7 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
