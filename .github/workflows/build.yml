@@ -26,13 +26,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
 
-      - name: Set PYTHONPATH
-        run: |
-          $env:PYTHONPATH="${{ github.workspace }}\src"
-
       - name: Run Tests
         run: |
-          python -m unittest discover -s src/tests -p "*_skryper.py"
+          $env:PYTHONPATH="D:\a\skryper\skryper\src" python -m unittest discover -s src/tests -p "*_skryper.py"
 
   build:
     needs: test
