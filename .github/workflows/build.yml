@@ -54,10 +54,10 @@ jobs:
           pyinstaller --name skryper --onefile --specpath src --noconfirm src/skryper/main.py
         shell: cmd
 
-      - name: Rename executable with date
+      - name: Rename executable with version and date
         run: |
           $currentDate = Get-Date -Format "yyyy-MM-dd"
-          Rename-Item "dist/skryper.exe" "dist/${currentDate}_skryper.exe"
+          Rename-Item "dist/skryper.exe" "dist/$currentDate_skryper.exe"
         shell: pwsh
 
       - name: Upload artifact
