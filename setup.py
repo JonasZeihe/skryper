@@ -16,8 +16,8 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/username/skryper",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Jonas Zeihe",
+    author_email="jonaszeihe@gmail.com",
     license="MIT",
     classifiers=[
         "Programming Language :: Python :: 3",
