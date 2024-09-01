@@ -8,26 +8,19 @@
 ![Logging Available](https://img.shields.io/badge/logging-optional-brightgreen.svg)
 ![AI-Aided Development](https://img.shields.io/badge/AI--aided%20development-practice--driven-orange.svg)
 
-**Skryper** is a streamlined tool designed to help developers scan, analyze, and organize their project’s file structure while adhering to `.gitignore` rules. Skryper simplifies the task of maintaining an organized and clutter-free codebase, especially in large, collaborative projects.
-
-## Overview
-
-In fast-paced development environments, managing files across large projects can become complex and time-consuming. Skryper addresses this challenge by providing a clear view of the file landscape, ensuring that only the relevant files are tracked and managed. By focusing on the files that matter, Skryper helps you maintain a clean, efficient, and manageable codebase.
+**Skryper** is an open-source tool licensed under the MIT License, designed to help developers scan, analyze, and organize their projects to a streamlined file structure efficiently, while adhering to `.gitignore` rules. It simplifies the task of maintaining an organized and clutter-free codebase, especially in large, collaborative projects.
 
 ## Key Features
 
 - **Directory Scanning**: Recursively scans directories, generating a clear and organized file structure.
-- **`.gitignore` Compliance**: Honors `.gitignore` rules, automatically excluding files that should not be tracked.
-- **On-Demand Logging**: Logging can be enabled during execution to generate detailed logs for debugging and auditing purposes.
+- **`.gitignore` Compliance**: Automatically excludes files that should not be tracked, in line with `.gitignore` rules.
+- **On-Demand Logging**: Enable logging during execution to generate detailed logs for debugging and auditing purposes.
 
 ## Installation
 
-1. **Download Skryper**
+1. **Download Skryper**: Visit the [GitHub Releases](https://github.com/jonaszeihe/skryper/releases) page to download the latest version of Skryper.
 
-   - Visit the [GitHub Releases](https://github.com/jonaszeihe/skryper/releases) page to download the latest version of Skryper.
-
-2. **Setup**
-
+2. **Setup**:
    - Extract the downloaded archive to a directory of your choice.
    - Ensure Python 3.x is installed. If not, download it from [python.org](https://www.python.org/).
 
@@ -47,7 +40,6 @@ To use Skryper, simply run the `skryper.exe` in the directory where you want to 
    - This will scan the current directory and save the directory structure to a timestamped file.
 
 2. **Enabling Logging**:
-
    - If you encounter issues or need detailed logs, you can run Skryper with logging enabled:
      ```bash
      ./skryper.exe --logging
@@ -71,7 +63,7 @@ To use Skryper, simply run the `skryper.exe` in the directory where you want to 
 
 If you are interested in contributing to Skryper or wish to modify it for your own purposes, you can set up a development environment by following these steps:
 
-1. **Clone the Repository**
+1. **Clone the Repository**:
 
    - Clone the Skryper repository from GitHub:
      ```bash
@@ -79,7 +71,7 @@ If you are interested in contributing to Skryper or wish to modify it for your o
      cd skryper
      ```
 
-2. **Create a Virtual Environment**
+2. **Create a Virtual Environment**:
 
    - It is recommended to create a virtual environment to manage dependencies:
      ```bash
@@ -87,21 +79,21 @@ If you are interested in contributing to Skryper or wish to modify it for your o
      source venv/bin/activate  # On Windows use `venv\Scripts\activate`
      ```
 
-3. **Install Development Dependencies**
+3. **Install Development Dependencies**:
 
    - Install the dependencies required for development:
      ```bash
      pip install -r requirements.txt
      ```
 
-4. **Run Skryper in Development Mode**
+4. **Run Skryper in Development Mode**:
 
    - You can now run Skryper directly from the source code for testing and development:
      ```bash
      python src/main.py --dir /path/to/your/project
      ```
 
-5. **Build the Executable**
+5. **Build the Executable**:
    - To build the executable for Skryper, use PyInstaller:
      ```bash
      pyinstaller --name skryper --onefile --specpath src --noconfirm src/main.py
@@ -115,6 +107,10 @@ Skryper is designed to work seamlessly with [Structra](https://github.com/JonasZ
 ## AI-Aided Development
 
 Skryper is an example of AI-aided software design and best practice coding. The development process was guided by AI to ensure a high-quality codebase, reflecting real-world complexities of file structures and `.gitignore` rules.
+
+## Reporting Issues
+
+If you encounter any bugs or issues while using Skryper, please help us improve the project by [creating an issue](https://github.com/jonaszeihe/skryper/issues) on GitHub. Skryper’s logging feature can be useful for providing detailed information when reporting problems.
 
 ## License
 
@@ -135,4 +131,11 @@ With Skryper, you maintain control over your project structure, optimize your wo
 - **Best Practice Coding**
 - **Project Organization**
 - **Workflow Optimization**
+- **Open Source**
+- **MIT License**
+- **Codebase Management**
+- **Developer Tools**
+- **Efficient Coding**
+- **Collaborative Projects**
+- **Software Development**
 - **Structra Integration**
