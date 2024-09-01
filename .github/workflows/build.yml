@@ -56,8 +56,8 @@ jobs:
 
       - name: Rename executable with version and date
         run: |
-          $currentDate = Get-Date -Format "yyyy-MM-dd"
-          Rename-Item "dist/skryper.exe" "dist/$currentDate_skryper.exe"
+          $currentDate = (Get-Date -Format "yyyy-MM-dd")
+          Rename-Item "dist/skryper.exe" "dist/${currentDate}_skryper.exe"
         shell: pwsh
 
       - name: Upload artifact
