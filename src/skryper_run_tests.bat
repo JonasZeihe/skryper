@@ -9,4 +9,14 @@ REM Project URL: https://github.com/jonaszeihe/skryper
 REM Contact: JonasZeihe@gmail.com
 REM -----------------------------------------------------------------------------
 
-pyinstaller --onefile --name skryper --specpath . --clean skryper/main.py
+@echo off
+cls
+
+REM Running tests (For development purposes)
+echo Running skryper tests...
+python -m unittest tests.test_skryper 
+
+REM Pause to keep the window open until the user presses a key
+echo.
+echo Press any key to exit...
+pause > nul
