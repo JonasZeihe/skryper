@@ -1,3 +1,13 @@
+# -----------------------------------------------------------------------------
+# Skryper - A tool to scan, analyze, and organize your project file structures
+#
+# Copyright (c) 2024 Jonas Zeihe
+# Licensed under the MIT License. See LICENSE file in the project root for details.
+#
+# Project URL: https://github.com/jonaszeihe/skryper
+# Contact: JonasZeihe@gmail.com
+# -----------------------------------------------------------------------------
+
 """
 This module provides functionality to recursively scan directories,
 considering .gitignore files and excluding specified files or directories.
