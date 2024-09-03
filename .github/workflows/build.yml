@@ -49,20 +49,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
 
-      - name: Generate .spec file
-        run: |
-          pyinstaller --name skryper --onefile --specpath src --noconfirm src/skryper/main.py
-        shell: cmd
-
-      - name: Rename executable with version and date
+      - name: Build executable with timestamp
         run: |
           $currentDate = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-          $newFileName = "dist/skryper_$($currentDate).exe"
-          if (Test-Path "dist/skryper.exe") {
-              Rename-Item "dist/skryper.exe" $newFileName
-          } else {
-              Write-Error "File not found: dist/skryper.exe"
-          }
+          pyinstaller --name "skryper_$($currentDate)" --onefile src/skryper/main.py
         shell: pwsh
 
       - name: Upload artifact
@@ -74,6 +64,7 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
