@@ -33,6 +33,42 @@ def scan_directory(directory: Path, config, logger: logging.Logger, prefix=""):
     """
     logger.debug(f"Scanning directory: {directory}")
 
+    current_ignore_patterns = update_ignore_patterns(directory, config, logger, prefix)
+
+    entries = sorted(directory.iterdir(), key=lambda e: (e.is_file(), e.name.lower()))
+    total_entries = len(entries)
+
+    for index, path in enumerate(entries):
+        connector = "└── " if index == total_entries - 1 else "├── "
+        relative_path = path.relative_to(directory)
+
+        if is_ignored(
+            relative_path, current_ignore_patterns, config.inclusion_rules, logger
+        ):
+            handle_ignored_path(path, relative_path, config, logger, prefix, connector)
+            continue
+
+        if path.is_dir():
+            process_directory(
+                path, config, logger, prefix, connector, index == total_entries - 1
+            )
+        else:
+            process_file(path, config, logger, prefix, connector)
+
+
+def update_ignore_patterns(directory: Path, config, logger: logging.Logger, prefix=""):
+    """
+    Updates the ignore patterns by loading .gitignore files from the directory.
+
+    Args:
+        directory (Path): The directory where the .gitignore might be located.
+        config: The configuration object that holds the base ignore patterns.
+        logger (logging.Logger): Logger instance for logging.
+        prefix (str, optional): A prefix used for formatting the output.
+
+    Returns:
+        list: Updated list of ignore patterns.
+    """
     gitignore_path = directory / ".gitignore"
     current_ignore_patterns = list(config.base_gitignore_paths)
 
@@ -41,36 +77,62 @@ def scan_directory(directory: Path, config, logger: logging.Logger, prefix=""):
         current_ignore_patterns.extend(load_gitignore(gitignore_path, logger))
         config.result.append(f"{prefix}├── .gitignore")
 
-    entries = sorted(directory.iterdir(), key=lambda e: (e.is_file(), e.name.lower()))
-    total_entries = len(entries)
+    return current_ignore_patterns
 
-    for index, path in enumerate(entries):
-        relative_path = path.relative_to(directory)
 
-        connector = "└── " if index == total_entries - 1 else "├── "
+def process_directory(
+    path: Path, config, logger: logging.Logger, prefix, connector, is_last_entry
+):
+    """
+    Processes a directory, appends it to the result, and recursively scans its content.
 
-        if is_ignored(
-            relative_path, current_ignore_patterns, config.inclusion_rules, logger
-        ):
-            if path.is_dir():
-                config.result.append(f"{prefix}{connector}{path.name}/")
-                logger.info(f"Ignored directory indicated: {relative_path}")
-            continue
+    Args:
+        path (Path): The directory path.
+        config: The configuration object that holds the scan result.
+        logger (logging.Logger): Logger instance for logging.
+        prefix (str): The current prefix used for formatting the output.
+        connector (str): The string used to indicate the hierarchy.
+        is_last_entry (bool): Indicates whether this is the last entry in the directory.
+    """
+    config.result.append(f"{prefix}{connector}{path.name}/")
+    logger.debug(f"Entering directory: {path}")
+    scan_directory(path, config, logger, prefix + ("    " if is_last_entry else "│   "))
 
-        if path.is_dir():
-            config.result.append(f"{prefix}{connector}{path.name}/")
-            logger.debug(f"Entering directory: {path}")
-            scan_directory(
-                path,
-                config,
-                logger,
-                prefix + ("    " if index == total_entries - 1 else "│   "),
-            )
-        else:
-            try:
-                config.result.append(f"{prefix}{connector}{path.name}")
-                logger.info(f"Added file: {path.name}")
-            except UnicodeEncodeError:
-                safe_name = path.name.encode("utf-8", "replace").decode("utf-8")
-                config.result.append(f"{prefix}{connector}{safe_name}")
-                logger.warning(f"Unicode issue with file: {path.name}")
+
+def process_file(path: Path, config, logger: logging.Logger, prefix, connector):
+    """
+    Processes a file, appends it to the result, and handles encoding issues.
+
+    Args:
+        path (Path): The file path.
+        config: The configuration object that holds the scan result.
+        logger (logging.Logger): Logger instance for logging.
+        prefix (str): The current prefix used for formatting the output.
+        connector (str): The string used to indicate the hierarchy.
+    """
+    try:
+        config.result.append(f"{prefix}{connector}{path.name}")
+        logger.info(f"Added file: {path.name}")
+    except UnicodeEncodeError:
+        safe_name = path.name.encode("utf-8", "replace").decode("utf-8")
+        config.result.append(f"{prefix}{connector}{safe_name}")
+        logger.warning(f"Unicode issue with file: {path.name}")
+
+
+def handle_ignored_path(
+    path: Path, relative_path, config, logger: logging.Logger, prefix, connector
+):
+    """
+    Handles paths that are ignored based on .gitignore or other rules.
+
+    Args:
+        path (Path): The path being ignored.
+        relative_path (Path): The relative path of the ignored file or directory.
+        config: The configuration object that holds the scan result.
+        logger (logging.Logger): Logger instance for logging.
+        prefix (str): The current prefix used for formatting the output.
+        connector (str): The string used to indicate the hierarchy.
+    """
+    if path.is_dir():
+        config.result.append(f"{prefix}{connector}{path.name}/")
+        logger.info(f"Ignored directory indicated: {relative_path}")
