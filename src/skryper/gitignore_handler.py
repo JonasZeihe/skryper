@@ -33,17 +33,49 @@ def load_gitignore(path: Path, logger: Optional[logging.Logger] = None) -> List[
     """
     ignore_patterns = []
     if path.is_file():
-        if logger:
-            logger.info(f"Loading .gitignore from: {path}")
-        with path.open("r", encoding="utf-8") as file:
-            for line in file:
-                line = line.strip()
-                if line and not line.startswith("#"):
-                    normalized_pattern = normalize_gitignore_pattern(line)
-                    ignore_patterns.append(normalized_pattern)
-                    if logger:
-                        logger.debug(f"Added ignore pattern: {normalized_pattern}")
+        log_info(logger, f"Loading .gitignore from: {path}")
+        ignore_patterns = extract_patterns_from_file(path, logger)
     return ignore_patterns
+
+
+def extract_patterns_from_file(
+    path: Path, logger: Optional[logging.Logger] = None
+) -> List[str]:
+    """
+    Extracts ignore patterns from a .gitignore file.
+
+    Args:
+        path (Path): Path to the .gitignore file.
+        logger (Optional[logging.Logger]): Logger instance for logging.
+
+    Returns:
+        List[str]: Normalized patterns from the file.
+    """
+    patterns = []
+    with path.open("r", encoding="utf-8") as file:
+        for line in file:
+            clean_pattern = clean_gitignore_line(line)
+            if clean_pattern:
+                normalized_pattern = normalize_gitignore_pattern(clean_pattern)
+                patterns.append(normalized_pattern)
+                log_debug(logger, f"Added ignore pattern: {normalized_pattern}")
+    return patterns
+
+
+def clean_gitignore_line(line: str) -> Optional[str]:
+    """
+    Cleans a line from a .gitignore file by stripping comments and whitespace.
+
+    Args:
+        line (str): The line to clean.
+
+    Returns:
+        Optional[str]: The cleaned line, or None if it's empty or a comment.
+    """
+    line = line.strip()
+    if line and not line.startswith("#"):
+        return line
+    return None
 
 
 def normalize_gitignore_pattern(pattern: str) -> str:
@@ -56,11 +88,7 @@ def normalize_gitignore_pattern(pattern: str) -> str:
     Returns:
         str: The normalized pattern.
     """
-    if pattern.endswith("/"):
-        pattern = pattern.rstrip("/")
-    if pattern.startswith("/"):
-        pattern = pattern.lstrip("/")
-    return pattern
+    return pattern.rstrip("/").lstrip("/")
 
 
 def is_ignored(
@@ -83,27 +111,65 @@ def is_ignored(
         bool: True if the path should be ignored, False otherwise.
     """
     relative_path = str(path).replace("\\", "/")
-
-    if logger:
-        logger.debug(
-            f"Checking if path '{relative_path}' should be ignored with patterns: {ignore_patterns}"
-        )
+    log_debug(logger, f"Checking if path '{relative_path}' should be ignored.")
 
     if relative_path in inclusion_rules:
-        if logger:
-            logger.debug(f"Path explicitly included: {relative_path}")
+        log_debug(logger, f"Path explicitly included: {relative_path}")
         return False
 
     for pattern in ignore_patterns:
-        if fnmatch.fnmatch(relative_path, pattern) or fnmatch.fnmatch(
-            path.name, pattern
-        ):
-            if logger:
-                logger.info(
-                    f"Path ignored: {relative_path} based on pattern: {pattern}"
-                )
+        if match_pattern(relative_path, path.name, pattern, logger):
+            log_info(
+                logger, f"Path ignored: {relative_path} based on pattern: {pattern}"
+            )
             return True
 
-    if logger:
-        logger.debug(f"Path not ignored: {relative_path}")
+    log_debug(logger, f"Path not ignored: {relative_path}")
     return False
+
+
+def match_pattern(
+    relative_path: str,
+    file_name: str,
+    pattern: str,
+    logger: Optional[logging.Logger] = None,
+) -> bool:
+    """
+    Checks if a path or file name matches a given pattern.
+
+    Args:
+        relative_path (str): The relative path to check.
+        file_name (str): The file name to check.
+        pattern (str): The pattern to match against.
+        logger (Optional[logging.Logger]): Logger instance for logging.
+
+    Returns:
+        bool: True if the pattern matches, False otherwise.
+    """
+    if fnmatch.fnmatch(relative_path, pattern) or fnmatch.fnmatch(file_name, pattern):
+        return True
+    return False
+
+
+def log_info(logger: Optional[logging.Logger], message: str):
+    """
+    Logs an info-level message if a logger is provided.
+
+    Args:
+        logger (Optional[logging.Logger]): Logger instance for logging.
+        message (str): The message to log.
+    """
+    if logger:
+        logger.info(message)
+
+
+def log_debug(logger: Optional[logging.Logger], message: str):
+    """
+    Logs a debug-level message if a logger is provided.
+
+    Args:
+        logger (Optional[logging.Logger]): Logger instance for logging.
+        message (str): The message to log.
+    """
+    if logger:
+        logger.debug(message)

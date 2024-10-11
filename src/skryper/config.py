@@ -30,8 +30,30 @@ class DirectoryScannerConfig:
 
     base_gitignore_paths: Set[str] = field(default_factory=set)
     excluded_files: Set[str] = field(
-        default_factory=lambda: {"__pycache__", ".git", ".mypy_cache"}
+        default_factory=lambda: get_default_excluded_files()
     )
-    inclusion_rules: Set[str] = field(default_factory=lambda: {".github"})
+    inclusion_rules: Set[str] = field(
+        default_factory=lambda: get_default_inclusion_rules()
+    )
     output_filename: str = ""
     result: List[str] = field(default_factory=list)
+
+
+def get_default_excluded_files() -> Set[str]:
+    """
+    Provides a default set of files and directories to exclude during scanning.
+
+    Returns:
+        Set[str]: A set of default excluded files and directories.
+    """
+    return {"__pycache__", ".git", ".mypy_cache", ".venv"}
+
+
+def get_default_inclusion_rules() -> Set[str]:
+    """
+    Provides a default set of files and directories to include, overriding ignore rules.
+
+    Returns:
+        Set[str]: A set of default inclusion rules.
+    """
+    return {".github"}
