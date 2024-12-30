@@ -7,20 +7,24 @@ REM Licensed under the MIT License. See LICENSE file in the project root for det
 REM 
 REM Project URL: https://github.com/jonaszeihe/skryper
 REM Contact: JonasZeihe@gmail.com
-REM -----------------------------------------------------------------------------
+REM ----------------------------------------------------------------------
 
-@echo off
-cls
+REM Activate the virtual environment
+call ..\venv\Scripts\activate
 
-REM Set the working directory to the project root (one level above the test_runners folder)
+REM Set the working directory to the project root
 cd /d %~dp0..\
 
-REM Running test_skryper.py with coverage
+REM Run the specified test with coverage
 echo Running test_skryper.py with coverage...
 coverage run --source=skryper -m unittest tests.test_skryper
 coverage report -m
 
-REM Pause to keep the window open until the user presses a key
+REM Inform the user
 echo.
-echo Press any key to exit...
+echo Test execution complete. Review the results above.
+echo Press any key to deactivate the virtual environment and exit...
 pause > nul
+
+REM Deactivate the virtual environment
+deactivate
