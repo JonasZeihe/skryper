@@ -18,7 +18,7 @@ set PYTHONPATH=%~dp0src
 
 REM Run the application with the provided file(s) and logging
 echo Running the application with logging...
-python src/skryper/main.py --logging %*
+python -m skryper.main --logging %*
 
 REM Inform the user
 echo Application execution complete. Press any key to deactivate the virtual environment and exit...
