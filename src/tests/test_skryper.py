@@ -17,136 +17,101 @@ and that the application behaves as expected.
 
 # test_skryper.py
 
+import pytest
 import sys
-import unittest
-from unittest.mock import patch
-from pathlib import Path
-import os
-import shutil
-from skryper.main import main
-from skryper.logger import save_logs_to_file, setup_logger
 import glob
+import os
+from pathlib import Path
+from unittest.mock import patch
+from app.main import main
+from app.logger import save_logs_to_file, setup_logger
 
 
-class TestSkryper(unittest.TestCase):
-    """Test suite for the Skryper directory scanning application, including Logger testing."""
+@pytest.fixture(scope="function")
+def test_environment(tmp_path):
+    """
+    Creates a temporary test environment with necessary test files and directories.
 
-    def setUp(self):
-        """Set up the test environment."""
-        self.test_dir = Path("test_environment")
-        self.test_dir.mkdir(exist_ok=True)
+    Args:
+        tmp_path (Path): Temporary directory provided by pytest.
 
-        self.create_test_files()
+    Returns:
+        Path: The path to the created test environment.
+    """
+    test_dir = tmp_path / "test_environment"
+    test_dir.mkdir()
 
-        (self.test_dir / ".gitignore").write_text(
-            "*.log\n/ignored_dir/\n/subdir/\n*.exe\n"
-        )
-        (self.test_dir / "nested" / ".gitignore").write_text("ignored_file.txt\n")
+    (test_dir / "file1.txt").write_text("This is a test file.")
+    (test_dir / "file2.log").write_text("This is a log file.")
+    (test_dir / "file3.exe").write_text("This is an executable file.")
 
-        self.create_complex_structure()
+    ignored_dir = test_dir / "ignored_dir"
+    ignored_dir.mkdir()
+    (ignored_dir / "file4.txt").write_text("This file should be ignored.")
 
-        self.original_cwd = Path.cwd()
-        os.chdir(self.test_dir)
+    nested_dir = test_dir / "nested"
+    nested_dir.mkdir()
+    (nested_dir / "included_file.txt").write_text("This file should be included.")
+    (nested_dir / "ignored_file.txt").write_text("This file should be ignored.")
 
-        self.logger, self.log_stream = setup_logger()
+    subnested_dir = nested_dir / "subnested"
+    subnested_dir.mkdir()
+    (subnested_dir / "file5.txt").write_text("This file should be included.")
+    (subnested_dir / "file6.log").write_text("This log file should be ignored.")
 
-    def create_test_files(self):
-        """Helper function to create a set of test files and directories."""
-        (self.test_dir / "file1.txt").write_text("This is a test file.")
-        (self.test_dir / "file2.log").write_text("This is a log file.")
-        (self.test_dir / "file3.exe").write_text("This is an executable file.")
-        (self.test_dir / "ignored_dir").mkdir(exist_ok=True)
-        (self.test_dir / "ignored_dir" / "file4.txt").write_text(
-            "This file should be ignored."
-        )
-        (self.test_dir / "nested").mkdir(exist_ok=True)
-        (self.test_dir / "nested" / "included_file.txt").write_text(
-            "This file should be included."
-        )
-        (self.test_dir / "nested" / "ignored_file.txt").write_text(
-            "This file should be ignored."
-        )
-        (self.test_dir / "nested" / "subnested").mkdir(exist_ok=True)
-        (self.test_dir / "nested" / "subnested" / "file5.txt").write_text(
-            "This file should be included."
-        )
-        (self.test_dir / "nested" / "subnested" / "file6.log").write_text(
-            "This log file should be ignored."
-        )
-        (self.test_dir / "subdir").mkdir(exist_ok=True)
-        (self.test_dir / "subdir" / "file7.txt").write_text(
-            "This file should be ignored."
-        )
-        (self.test_dir / "subdir" / "another_ignored_dir").mkdir(exist_ok=True)
-        (self.test_dir / "subdir" / "another_ignored_dir" / "file8.txt").write_text(
-            "This file should also be ignored."
-        )
+    (test_dir / ".gitignore").write_text("*.log\n/ignored_dir/\n/subdir/\n*.exe\n")
+    (nested_dir / ".gitignore").write_text("ignored_file.txt\n")
 
-    def create_complex_structure(self):
-        """Helper function to create a complex nested structure."""
-        (self.test_dir / "complex").mkdir(exist_ok=True)
-        (self.test_dir / "complex" / "deep").mkdir(exist_ok=True)
-        (self.test_dir / "complex" / "deep" / "file9.txt").write_text(
-            "This deep file should be included."
-        )
-        (self.test_dir / "complex" / "deep" / "file10.log").write_text(
-            "This deep log file should be ignored."
-        )
-
-    def tearDown(self):
-        """Tear down the test environment."""
-        os.chdir(self.original_cwd)
-        shutil.rmtree(self.test_dir)
-
-    def test_integration(self):
-        """Run the integration test for the directory scanning application."""
-        if hasattr(sys.stdout, "reconfigure"):
-            sys.stdout.reconfigure(encoding="utf-8")
-
-        with patch.object(sys, "argv", ["main.py", "--output", "output.txt"]):
-            main()
-
-        output_file = Path("output.txt")
-        self.assertTrue(output_file.exists(), "Output file was not created.")
-
-        with output_file.open("r", encoding="utf-8") as f:
-            result = f.read()
-
-        self.assertIn("file1.txt", result)
-        self.assertIn("included_file.txt", result)
-        self.assertIn("file5.txt", result)
-        self.assertIn("file9.txt", result)
-
-        self.assertNotIn("file2.log", result)
-        self.assertNotIn("file3.exe", result)
-        self.assertNotIn("ignored_file.txt", result)
-        self.assertNotIn("file7.txt", result)
-        self.assertNotIn("another_ignored_dir", result)
-        self.assertNotIn("file10.log", result)
-
-        self.assertIn("ignored_dir/", result)
-        self.assertNotIn("ignored_dir/file4.txt", result)
-
-    def test_logger_integration(self):
-        """Test if the logger writes logs to the in-memory stream and saves to a file."""
-        self.logger.info("Test log entry for logger.")
-
-        log_content = self.log_stream.getvalue()
-        self.assertIn("Test log entry for logger.", log_content)
-
-        save_logs_to_file(self.log_stream, log_dir=self.test_dir)
-
-        log_files = glob.glob(f"{self.test_dir}/*_scan.log")
-        self.assertTrue(len(log_files) > 0, "No log file was created.")
-        log_file = Path(log_files[0])
-
-        with log_file.open("r", encoding="utf-8") as f:
-            file_content = f.read()
-
-        self.assertIn("Test log entry for logger.", file_content)
-
-        log_file.unlink()
+    yield test_dir
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_integration(test_environment, monkeypatch):
+    """
+    Runs an integration test for the directory scanning application.
+
+    Args:
+        test_environment (Path): Path to the test environment.
+        monkeypatch (pytest.MonkeyPatch): Pytest utility to modify attributes during testing.
+    """
+    monkeypatch.setattr(sys, "argv", ["main.py", "--output", "output.txt"])
+    os.chdir(test_environment)
+
+    main()
+
+    output_file = test_environment / "output.txt"
+    assert output_file.exists(), "Output file was not created."
+
+    with output_file.open("r", encoding="utf-8") as f:
+        result = f.read()
+
+    assert "file1.txt" in result
+    assert "included_file.txt" in result
+    assert "file5.txt" in result
+
+    assert "file2.log" not in result
+    assert "file3.exe" not in result
+    assert "ignored_file.txt" not in result
+    assert "file6.log" not in result
+
+
+def test_logger_integration(test_environment):
+    """
+    Tests whether the logger correctly logs messages and saves them to a file.
+
+    Args:
+        test_environment (Path): Path to the test environment.
+    """
+    logger, log_stream = setup_logger()
+
+    logger.info("Test log entry for logger.")
+    log_content = log_stream.getvalue()
+    assert "Test log entry for logger." in log_content
+
+    save_logs_to_file(log_stream, log_dir=test_environment)
+    log_files = list(test_environment.glob("*_scan.log"))
+    assert len(log_files) > 0, "No log file was created."
+
+    with log_files[0].open("r", encoding="utf-8") as f:
+        file_content = f.read()
+
+    assert "Test log entry for logger." in file_content

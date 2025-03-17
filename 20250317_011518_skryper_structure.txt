@@ -1,0 +1,51 @@
+skryper/
+├── .gitignore
+├── .git/
+├── .github/
+│   └── workflows/
+│       └── build.yml
+├── build/
+├── dist/
+├── images/
+│   ├── skryper.ico
+│   └── skryper_logo.png
+├── scripts/
+│   ├── logic/
+│   │   ├── .mypy_cache/
+│   │   ├── build_app.py
+│   │   ├── init_project.py
+│   │   ├── run_logic.py
+│   │   ├── test_all.py
+│   │   └── update_requirements.py
+│   ├── mac/
+│   │   ├── build.sh
+│   │   ├── deactivate_venv.sh
+│   │   ├── init_project.sh
+│   │   ├── run.sh
+│   │   ├── test.sh
+│   │   └── update_requirements.sh
+│   └── windows/
+│       ├── build.bat
+│       ├── deactivate_venv.bat
+│       ├── init_project.bat
+│       ├── run.bat
+│       ├── test.bat
+│       └── update_requirements.bat
+├── src/
+│   ├── app/
+│   │   ├── __pycache__/
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   ├── directory_scanner.py
+│   │   ├── gitignore_handler.py
+│   │   ├── logger.py
+│   │   └── main.py
+│   └── tests/
+│       ├── __pycache__/
+│       ├── __init__.py
+│       └── test_skryper.py
+├── venv/
+├── LICENSE
+├── README.md
+├── requirements.txt
+└── skryper.code-workspace

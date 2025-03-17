@@ -11,7 +11,7 @@
 """
 Entry point for the directory scanning application.
 
-This module scans the current directory's structure and saves the output to a 
+This module scans the current directory's structure and saves the output to a
 timestamped file.
 """
 
@@ -22,10 +22,10 @@ from datetime import datetime
 import os
 import ctypes
 import argparse
-from skryper.config import DirectoryScannerConfig
-from skryper.directory_scanner import scan_directory
-from skryper.gitignore_handler import load_gitignore
-from skryper.logger import setup_logger, save_logs_to_file
+from app.config import DirectoryScannerConfig
+from app.directory_scanner import scan_directory
+from app.gitignore_handler import load_gitignore
+from app.logger import setup_logger, save_logs_to_file
 
 
 def parse_arguments():
