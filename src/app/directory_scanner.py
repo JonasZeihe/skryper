@@ -15,9 +15,9 @@ considering .gitignore files and excluding specified files or directories.
 
 # directory_scanner.py
 
+import logging
 from pathlib import Path
 from .gitignore_handler import load_gitignore, is_ignored
-import logging
 
 
 def scan_directory(directory: Path, config, logger: logging.Logger, prefix=""):
