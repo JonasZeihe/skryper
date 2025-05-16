@@ -78,15 +78,49 @@ jobs:
         run: |
           currentDate=$(date +"%Y-%m-%d_%H-%M-%S")
           app_name="Skryper_macOS_$currentDate"
-          pyinstaller \
-            --name "$app_name" \
-            src/app/main.py
 
-          if [ ! -d "dist/$app_name.app" ]; then
-            echo "ERROR: .app bundle was not created correctly"
-            ls -la dist
-            exit 1
-          fi
+          pyinstaller --onefile --name "$app_name" src/app/main.py
+
+          mkdir -p "dist/$app_name.app/Contents/MacOS"
+          mkdir -p "dist/$app_name.app/Contents/Resources"
+
+          cat <<EOF > "dist/$app_name.app/Contents/Info.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleExecutable</key>
+  <string>$app_name</string>
+  <key>CFBundleIdentifier</key>
+  <string>com.skryper.app</string>
+  <key>CFBundleName</key>
+  <string>Skryper</string>
+  <key>CFBundleVersion</key>
+  <string>1.0</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+</dict>
+</plist>
+EOF
+
+          mv "dist/$app_name" "dist/$app_name.app/Contents/MacOS/skryper-bin"
+
+          cat <<EOF > "dist/$app_name.app/Contents/MacOS/terminal-launch.sh"
+#!/bin/bash
+cd "\$(dirname "\$0")"
+chmod +x skryper-bin
+./skryper-bin
+EOF
+          chmod +x "dist/$app_name.app/Contents/MacOS/terminal-launch.sh"
+
+          cat <<EOF > "dist/$app_name.app/Contents/MacOS/$app_name"
+#!/bin/bash
+exec osascript -e 'tell application "Terminal"
+  do script "cd \"'\$(dirname \"\$0\")'\"; ./terminal-launch.sh"
+  activate
+end tell'
+EOF
+          chmod +x "dist/$app_name.app/Contents/MacOS/$app_name"
 
           mkdir -p release-mac
           mv "dist/$app_name.app" release-mac/
