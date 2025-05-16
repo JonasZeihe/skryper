@@ -78,48 +78,42 @@ jobs:
         run: |
           currentDate=$(date +"%Y-%m-%d_%H-%M-%S")
           app_name="Skryper_macOS_$currentDate"
-
           pyinstaller --onefile --name "$app_name" src/app/main.py
 
           mkdir -p "dist/$app_name.app/Contents/MacOS"
           mkdir -p "dist/$app_name.app/Contents/Resources"
 
-          cat <<EOF > "dist/$app_name.app/Contents/Info.plist"
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>CFBundleExecutable</key>
-  <string>$app_name</string>
-  <key>CFBundleIdentifier</key>
-  <string>com.skryper.app</string>
-  <key>CFBundleName</key>
-  <string>Skryper</string>
-  <key>CFBundleVersion</key>
-  <string>1.0</string>
-  <key>CFBundlePackageType</key>
-  <string>APPL</string>
-</dict>
-</plist>
-EOF
+          info_plist_path="dist/$app_name.app/Contents/Info.plist"
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > "$info_plist_path"
+          echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> "$info_plist_path"
+          echo '<plist version="1.0">' >> "$info_plist_path"
+          echo '<dict>' >> "$info_plist_path"
+          echo "  <key>CFBundleExecutable</key>" >> "$info_plist_path"
+          echo "  <string>$app_name</string>" >> "$info_plist_path"
+          echo "  <key>CFBundleIdentifier</key>" >> "$info_plist_path"
+          echo "  <string>com.skryper.app</string>" >> "$info_plist_path"
+          echo "  <key>CFBundleName</key>" >> "$info_plist_path"
+          echo "  <string>Skryper</string>" >> "$info_plist_path"
+          echo "  <key>CFBundleVersion</key>" >> "$info_plist_path"
+          echo "  <string>1.0</string>" >> "$info_plist_path"
+          echo "  <key>CFBundlePackageType</key>" >> "$info_plist_path"
+          echo "  <string>APPL</string>" >> "$info_plist_path"
+          echo '</dict>' >> "$info_plist_path"
+          echo '</plist>' >> "$info_plist_path"
 
           mv "dist/$app_name" "dist/$app_name.app/Contents/MacOS/skryper-bin"
 
-          cat <<EOF > "dist/$app_name.app/Contents/MacOS/terminal-launch.sh"
-#!/bin/bash
-cd "\$(dirname "\$0")"
-chmod +x skryper-bin
-./skryper-bin
-EOF
+          echo '#!/bin/bash' > "dist/$app_name.app/Contents/MacOS/terminal-launch.sh"
+          echo 'cd "$(dirname "$0")"' >> "dist/$app_name.app/Contents/MacOS/terminal-launch.sh"
+          echo 'chmod +x skryper-bin' >> "dist/$app_name.app/Contents/MacOS/terminal-launch.sh"
+          echo './skryper-bin' >> "dist/$app_name.app/Contents/MacOS/terminal-launch.sh"
           chmod +x "dist/$app_name.app/Contents/MacOS/terminal-launch.sh"
 
-          cat <<EOF > "dist/$app_name.app/Contents/MacOS/$app_name"
-#!/bin/bash
-exec osascript -e 'tell application "Terminal"
-  do script "cd \"'\$(dirname \"\$0\")'\"; ./terminal-launch.sh"
-  activate
-end tell'
-EOF
+          echo '#!/bin/bash' > "dist/$app_name.app/Contents/MacOS/$app_name"
+          echo 'exec osascript -e '\''tell application "Terminal"'\' >> "dist/$app_name.app/Contents/MacOS/$app_name"
+          echo '  do script "cd \"'"\$(dirname \"\$0\")"'\"; ./terminal-launch.sh"' >> "dist/$app_name.app/Contents/MacOS/$app_name"
+          echo '  activate' >> "dist/$app_name.app/Contents/MacOS/$app_name"
+          echo 'end tell'\'' ' >> "dist/$app_name.app/Contents/MacOS/$app_name"
           chmod +x "dist/$app_name.app/Contents/MacOS/$app_name"
 
           mkdir -p release-mac
