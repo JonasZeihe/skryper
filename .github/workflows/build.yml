@@ -80,7 +80,6 @@ jobs:
           app_name="Skryper_macOS_$currentDate"
           pyinstaller \
             --windowed \
-            --onefile \
             --name "$app_name" \
             src/app/main.py
 
