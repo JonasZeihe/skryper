@@ -79,7 +79,6 @@ jobs:
           currentDate=$(date +"%Y-%m-%d_%H-%M-%S")
           app_name="Skryper_macOS_$currentDate"
           pyinstaller \
-            --windowed \
             --name "$app_name" \
             src/app/main.py
 
