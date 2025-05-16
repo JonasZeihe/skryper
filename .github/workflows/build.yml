@@ -80,8 +80,8 @@ jobs:
           app_name="Skryper_macOS_$currentDate"
           pyinstaller \
             --windowed \
+            --onefile \
             --name "$app_name" \
-            --target-architecture arm64 \
             src/app/main.py
 
           if [ ! -d "dist/$app_name.app" ]; then
