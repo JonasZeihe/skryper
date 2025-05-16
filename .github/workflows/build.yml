@@ -70,34 +70,32 @@ jobs:
         shell: pwsh
         run: |
           $currentDate = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-          pyinstaller --name "skryper_$($currentDate)" --onefile src/app/main.py
+          pyinstaller --name "Skryper_$($currentDate)" --onefile src/app/main.py
 
       - name: Build .app for macOS
         if: matrix.os == 'macos-latest'
         shell: bash
         run: |
           currentDate=$(date +"%Y-%m-%d_%H-%M-%S")
-          pyinstaller --name "Skryper_macOS_$currentDate" \
-                      --windowed \
-                      --onedir \
-                      src/app/main.py
+          pyinstaller --windowed --name "Skryper_macOS" --onedir src/app/main.py
           mkdir -p release-mac
-          mv dist/Skryper_macOS_*/Skryper_macOS_*.app release-mac/
-          cd release-mac && zip -r Skryper_macOS.zip *.app
+          mv "dist/Skryper_macOS" "release-mac/Skryper_macOS_$currentDate.app"
+          cd release-mac
+          zip -r "Skryper_macOS_$currentDate.zip" "Skryper_macOS_$currentDate.app"
 
       - name: Upload Windows Artifact
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: skryper-exe
-          path: dist/skryper_*.exe
+          path: dist/Skryper_*.exe
 
-      - name: Upload macOS .app ZIP
+      - name: Upload macOS Artifact
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
           name: skryper-mac
-          path: release-mac/Skryper_macOS.zip
+          path: release-mac/*.zip
 
   release:
     needs: build
@@ -120,8 +118,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            skryper_*.exe
-            Skryper_macOS.zip
+            Skryper_*.exe
+            Skryper_macOS_*.zip
           tag_name: "v${{ github.run_id }}-${{ github.run_number }}"
           name: "Release ${{ github.run_id }}-${{ github.run_number }}"
           body: "Automated release of Skryper version ${{ github.run_id }}-${{ github.run_number }}"
