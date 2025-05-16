@@ -70,14 +70,14 @@ jobs:
         shell: pwsh
         run: |
           $currentDate = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-          pyinstaller --name "skryper_$($currentDate)" --onefile src/skryper/main.py
+          pyinstaller --name "skryper_$($currentDate)" --onefile src/app/main.py
 
       - name: Build for macOS
         if: matrix.os == 'macos-latest'
         shell: bash
         run: |
           currentDate=$(date +"%Y-%m-%d_%H-%M-%S")
-          pyinstaller --name "skryper_macOS_$currentDate" --onefile src/skryper/main.py
+          pyinstaller --name "skryper_macOS_$currentDate" --onefile src/app/main.py
 
       - name: Upload Windows Artifact
         if: matrix.os == 'windows-latest'
