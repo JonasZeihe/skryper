@@ -14,18 +14,30 @@ def main():
 
     if not os.path.isdir("venv"):
         print("Creating virtual environment...")
-        _run([sys.executable, "-m", "venv", "venv"])
+        _run([sys.executable, "-m", "venv", "--upgrade-deps", "venv"])
     else:
         print("Virtual environment already exists.")
 
-    _run_in_venv(["python", "-m", "pip", "install", "--upgrade", "pip"])
+    _run_in_venv(
+        [
+            "python",
+            "-m",
+            "pip",
+            "install",
+            "--upgrade",
+            "pip",
+            "--break-system-packages",
+        ]
+    )
 
     if not _has_module("pipreqsnb"):
         print("Installing pipreqsnb...")
-        _run_in_venv(["python", "-m", "pip", "install", "pipreqsnb"])
+        _run_in_venv(
+            ["python", "-m", "pip", "install", "--break-system-packages", "pipreqsnb"]
+        )
 
     print("Generating requirements.txt with pipreqsnb (ignoring venv)...")
-    _run_in_venv(["pipreqsnb", ".", "--force", "--ignore", "venv"])
+    _run_in_venv_cmd("pipreqsnb . --force --ignore venv")
 
     if os.path.isfile("requirements.txt"):
         print("Installing from requirements.txt...")
@@ -36,6 +48,7 @@ def main():
                 "pip",
                 "install",
                 "--no-cache-dir",
+                "--break-system-packages",
                 "-r",
                 "requirements.txt",
             ]
@@ -52,10 +65,15 @@ def main():
 
 
 def _run(cmd, check=True):
+    if cmd[0] == "python":
+        cmd[0] = sys.executable
     subprocess.run(cmd, check=check)
 
 
 def _run_in_venv(cmd, output=None):
+    if cmd[0] == "python":
+        cmd[0] = sys.executable
+
     if os.name == "nt":
         act = os.path.join("venv", "Scripts", "activate.bat")
         full_cmd = f'call "{act}" && ' + " ".join(cmd)
@@ -71,6 +89,16 @@ def _run_in_venv(cmd, output=None):
         subprocess.run(full_cmd, shell=True, check=True)
 
 
+def _run_in_venv_cmd(cmd_str):
+    if os.name == "nt":
+        act = os.path.join("venv", "Scripts", "activate.bat")
+        full_cmd = f'call "{act}" && {cmd_str}'
+    else:
+        act = "./venv/bin/activate"
+        full_cmd = f'. "{act}" && {cmd_str}'
+    subprocess.run(full_cmd, shell=True, check=True)
+
+
 def _has_module(mod):
     try:
         _run_in_venv(["python", "-c", f"import {mod}"])
@@ -81,7 +109,7 @@ def _has_module(mod):
 
 def _has_tkinter():
     try:
-        _run_in_venv(["python", "-c", "import tkinter"])
+        _run_in_venv_cmd('python -c "import tkinter"')
         return True
     except subprocess.CalledProcessError:
         return False
@@ -98,7 +126,7 @@ def _maybe_brew_install_tk():
         f.write('export LDFLAGS="-L/opt/homebrew/opt/tcl-tk/lib"\n')
         f.write('export CPPFLAGS="-I/opt/homebrew/opt/tcl-tk/include"\n')
         f.write('export PKG_CONFIG_PATH="/opt/homebrew/opt/tcl-tk/lib/pkgconfig"\n')
-    _run_in_venv(["python", "-c", "import tkinter"])
+    _run_in_venv_cmd('python -c "import tkinter"')
 
 
 if __name__ == "__main__":

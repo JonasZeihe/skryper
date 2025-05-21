@@ -11,28 +11,29 @@
 """
 Logger component for the directory scanning application.
 
-This module provides functions to set up a logger that captures logs in memory 
+This module provides functions to set up a logger that captures logs in memory
 and later saves them to a file.
 """
 
 # logger.py
 
 import logging
-from datetime import datetime
 from pathlib import Path
 from io import StringIO
 
 
 def setup_logger(log_level=logging.INFO) -> (logging.Logger, StringIO):
     """
-    Sets up the logger for the application. Logs are stored in memory and can be written to a file later.
+    Sets up the logger for the application.
+
+    Logs are simultaneously written to memory (for optional saving to file)
+    and to the console.
 
     Args:
-        log_level (int, optional): The logging level (e.g., logging.INFO, logging.DEBUG). Defaults to logging.INFO.
+        log_level (int): Logging level (default: logging.INFO)
 
     Returns:
-        logging.Logger: Configured logger instance.
-        StringIO: Log stream to store logs in memory.
+        Tuple[Logger, StringIO]: Configured logger and in-memory log stream.
     """
     logger = logging.getLogger("DirectoryScanner")
     logger.setLevel(log_level)
@@ -56,15 +57,15 @@ def create_stream_handler(
 
     Args:
         log_stream (StringIO): The stream where logs will be stored.
-        log_level (int): The logging level for the handler.
+        log_level (int): Logging level for this handler.
 
     Returns:
-        logging.StreamHandler: Configured stream handler.
+        logging.StreamHandler: Configured in-memory log handler.
     """
-    stream_handler = logging.StreamHandler(log_stream)
-    stream_handler.setLevel(log_level)
-    stream_handler.setFormatter(create_log_formatter())
-    return stream_handler
+    handler = logging.StreamHandler(log_stream)
+    handler.setLevel(log_level)
+    handler.setFormatter(create_log_formatter())
+    return handler
 
 
 def create_console_handler(log_level: int) -> logging.StreamHandler:
@@ -72,38 +73,35 @@ def create_console_handler(log_level: int) -> logging.StreamHandler:
     Creates a console handler for logging to stdout.
 
     Args:
-        log_level (int): The logging level for the handler.
+        log_level (int): Logging level for this handler.
 
     Returns:
         logging.StreamHandler: Configured console handler.
     """
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(log_level)
-    console_handler.setFormatter(create_log_formatter())
-    return console_handler
+    handler = logging.StreamHandler()
+    handler.setLevel(log_level)
+    handler.setFormatter(create_log_formatter())
+    return handler
 
 
 def create_log_formatter() -> logging.Formatter:
     """
-    Creates a standard log formatter for all log handlers.
+    Creates a standard formatter for all log handlers.
 
     Returns:
-        logging.Formatter: The log formatter.
+        logging.Formatter: Formatter instance with timestamp and log level.
     """
     return logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 
 
-def save_logs_to_file(log_stream: StringIO, log_dir: Path = Path(".")) -> None:
+def save_logs_to_file(log_stream: StringIO, log_path: Path) -> None:
     """
-    Saves the in-memory logs to a log file.
+    Saves the in-memory logs to a specified log file.
 
     Args:
         log_stream (StringIO): The in-memory log stream.
-        log_dir (Path): The directory where the log file will be saved.
+        log_path (Path): Full path where the log file will be saved.
     """
-    log_dir.mkdir(parents=True, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file = log_dir / f"{timestamp}_scan.log"
-
-    with log_file.open("w", encoding="utf-8") as file:
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("w", encoding="utf-8") as file:
         file.write(log_stream.getvalue())

@@ -12,7 +12,7 @@
 This module defines the configuration for the directory scanner.
 
 The configuration includes rules for ignoring specific files and directories,
-inclusion rules to override ignore patterns, and other settings required 
+inclusion rules to override ignore patterns, and other settings required
 during the directory scanning process.
 """
 
@@ -46,7 +46,7 @@ def get_default_excluded_files() -> Set[str]:
     Returns:
         Set[str]: A set of default excluded files and directories.
     """
-    return {"__pycache__", ".git", ".mypy_cache", ".venv"}
+    return {"__pycache__", ".git", ".mypy_cache", ".venv", ".Trash"}
 
 
 def get_default_inclusion_rules() -> Set[str]:
