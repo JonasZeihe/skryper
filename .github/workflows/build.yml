@@ -71,30 +71,30 @@ jobs:
         run: |
           $currentDate = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
           pyinstaller --onefile --name "Skryper_$($currentDate)" src/app/main.py
-          Compress-Archive -Path dist\Skryper_*.exe -DestinationPath dist\skryper_windows.zip
 
       - name: Build for macOS
         if: matrix.os == 'macos-latest'
         shell: bash
         run: |
-          pyinstaller --onefile --name skryper src/app/main.py
-          chmod +x dist/skryper
+          currentDate=$(date +"%Y-%m-%d_%H-%M-%S")
+          pyinstaller --onefile --name "skryper_$currentDate" src/app/main.py
+          chmod +x "dist/skryper_$currentDate"
           cd dist
-          zip skryper_macOS.zip skryper
+          zip "skryper_macOS_$currentDate.zip" "skryper_$currentDate"
 
       - name: Upload Windows artifact
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: skryper-exe
-          path: dist/skryper_windows.zip
+          path: dist/Skryper_*.exe
 
       - name: Upload macOS artifact
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
           name: skryper-mac
-          path: dist/skryper_macOS.zip
+          path: dist/skryper_macOS_*.zip
 
   release:
     needs: build
@@ -117,8 +117,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            skryper_windows.zip
-            skryper_macOS.zip
+            Skryper_*.exe
+            skryper_macOS_*.zip
           tag_name: "v${{ github.run_id }}-${{ github.run_number }}"
           name: "Release ${{ github.run_id }}-${{ github.run_number }}"
           body: "Automated release of Skryper version ${{ github.run_id }}-${{ github.run_number }}"
