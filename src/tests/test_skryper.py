@@ -17,14 +17,11 @@ and that the application behaves as expected.
 
 # test_skryper.py
 
-import pytest
-import sys
-import glob
 import os
-from pathlib import Path
-from unittest.mock import patch
+import sys
+import pytest
 from app.main import main
-from app.logger import save_logs_to_file, setup_logger
+from app.logger import setup_logger, save_logs_to_file
 
 
 @pytest.fixture(scope="function")
@@ -62,7 +59,7 @@ def test_environment(tmp_path):
     (test_dir / ".gitignore").write_text("*.log\n/ignored_dir/\n/subdir/\n*.exe\n")
     (nested_dir / ".gitignore").write_text("ignored_file.txt\n")
 
-    yield test_dir
+    return test_dir
 
 
 def test_integration(test_environment, monkeypatch):
@@ -73,16 +70,20 @@ def test_integration(test_environment, monkeypatch):
         test_environment (Path): Path to the test environment.
         monkeypatch (pytest.MonkeyPatch): Pytest utility to modify attributes during testing.
     """
-    monkeypatch.setattr(sys, "argv", ["main.py", "--output", "output.txt"])
+    output_file = test_environment / "output.txt"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["main.py", "--output", str(output_file), "--root", str(test_environment)],
+    )
     os.chdir(test_environment)
 
     main()
 
-    output_file = test_environment / "output.txt"
     assert output_file.exists(), "Output file was not created."
 
-    with output_file.open("r", encoding="utf-8") as f:
-        result = f.read()
+    with output_file.open("r", encoding="utf-8") as result_file:
+        result = result_file.read()
 
     assert "file1.txt" in result
     assert "included_file.txt" in result
@@ -102,16 +103,17 @@ def test_logger_integration(test_environment):
         test_environment (Path): Path to the test environment.
     """
     logger, log_stream = setup_logger()
-
     logger.info("Test log entry for logger.")
+
     log_content = log_stream.getvalue()
     assert "Test log entry for logger." in log_content
 
-    save_logs_to_file(log_stream, log_dir=test_environment)
+    save_logs_to_file(log_stream, test_environment / "test_scan.log")
+
     log_files = list(test_environment.glob("*_scan.log"))
-    assert len(log_files) > 0, "No log file was created."
+    assert log_files, "No log file was created."
 
-    with log_files[0].open("r", encoding="utf-8") as f:
-        file_content = f.read()
+    with log_files[0].open("r", encoding="utf-8") as log_file:
+        log_data = log_file.read()
 
-    assert "Test log entry for logger." in file_content
+    assert "Test log entry for logger." in log_data

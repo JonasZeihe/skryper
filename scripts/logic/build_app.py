@@ -9,6 +9,7 @@ via PyInstaller or similar tools.
 import os
 import sys
 import subprocess
+import shutil
 
 
 def main():
@@ -24,7 +25,8 @@ def main():
     _run_in_venv(["pip", "install", "-r", "requirements.txt"])
     _run_in_venv(["python", "-m", "pip", "show", "pyinstaller"], check_install=True)
 
-    dist_path, build_path = os.path.join(root, "dist"), os.path.join(root, "build")
+    dist_path = os.path.join(root, "dist")
+    build_path = os.path.join(root, "build")
     _rmdir(dist_path)
     _rmdir(build_path)
 
@@ -81,11 +83,7 @@ def _install_pyinstaller(activate):
 def _rmdir(path):
     if os.path.isdir(path):
         print(f"Removing {path}...")
-        subprocess.run(
-            ["rmdir", "/s", "/q", path] if os.name == "nt" else ["rm", "-rf", path],
-            shell=True,
-            check=True,
-        )
+        shutil.rmtree(path)
 
 
 if __name__ == "__main__":

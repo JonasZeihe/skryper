@@ -4,6 +4,8 @@
 set -e
 cd "$(dirname "$0")"
 cd ../../
-python scripts/logic/init_project.py
-echo "Press any key to exit..."
-read -n 1 -s
+
+python3 scripts/logic/update_requirements.py
+
+echo "Done."
+read -p "Press [Enter] to close this window."

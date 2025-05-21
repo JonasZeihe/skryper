@@ -11,8 +11,8 @@
 """
 Entry point for the directory scanning application.
 
-This module scans the current directory's structure and saves the output to a
-timestamped file.
+This module scans the structure of subdirectories relative to the executable location
+or a given root, and saves the output and logs to timestamped files.
 """
 
 # main.py
@@ -20,6 +20,7 @@ timestamped file.
 from pathlib import Path
 from datetime import datetime
 import os
+import sys
 import ctypes
 import argparse
 from app.config import DirectoryScannerConfig
@@ -42,6 +43,7 @@ def parse_arguments():
     parser.add_argument(
         "--output", type=str, default=None, help="Specify output file name"
     )
+    parser.add_argument("--root", type=str, default=None, help="Root directory to scan")
     return parser.parse_args()
 
 
@@ -76,40 +78,55 @@ def configure_directory_scanner():
     return config
 
 
-def generate_output_filename(args, current_dir_name):
+def generate_output_and_log_filenames(args, current_dir_name):
     """
-    Generates the output filename based on arguments or timestamp.
+    Generates filenames for the structure and log files based on arguments or timestamp.
 
     Args:
         args: Command-line arguments.
         current_dir_name: The name of the current directory.
 
     Returns:
-        str: The output filename.
+        tuple: (structure_filename, log_filename)
     """
-    if args.output:
-        return args.output
-    else:
-        return f"{datetime.now():%Y%m%d_%H%M%S}_{current_dir_name}_structure.txt"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    structure_filename = args.output or f"{timestamp}_{current_dir_name}_structure.txt"
+    log_filename = f"{timestamp}_scan.log"
+    return structure_filename, log_filename
 
 
-def save_directory_structure(config, logger):
+def save_directory_structure(config, logger, output_path):
     """
     Saves the scanned directory structure to a file.
 
     Args:
         config: DirectoryScannerConfig containing the scan result.
         logger: The logger instance.
+        output_path (Path): Full path to the structure output file.
     """
-    with Path(config.output_filename).open("w", encoding="utf-8") as f:
+    with output_path.open("w", encoding="utf-8") as f:
         f.write("\n".join(config.result))
-    logger.info("Directory structure saved to '%s'.", config.output_filename)
-    print(f"Directory structure saved to {config.output_filename}")
+    logger.info("Directory structure saved to '%s'.", output_path)
+    print(f"Directory structure saved to {output_path}")
+
+
+def save_log_file(log_stream, output_filename, base_path):
+    """
+    Saves the in-memory log to a file with the same timestamp as the structure file.
+
+    Args:
+        log_stream (StringIO): In-memory log stream.
+        output_filename (str): Name of the structure output file.
+        base_path (Path): Directory where the log file will be saved.
+    """
+    log_filename = output_filename.replace("_structure.txt", "_scan.log")
+    log_path = base_path / log_filename
+    save_logs_to_file(log_stream, log_path)
 
 
 def main(args=None):
     """
-    Executes the directory scan and saves the structure to a timestamped file.
+    Executes the directory scan and saves the structure and logs to files.
     """
     if args is None:
         args = parse_arguments()
@@ -120,17 +137,28 @@ def main(args=None):
     logger, log_stream = initialize_logger(args)
     config = configure_directory_scanner()
 
-    current_dir_name = Path.cwd().name
+    execution_dir = (
+        Path(args.root) if args.root else Path(os.path.dirname(sys.executable))
+    )
+    current_dir_name = execution_dir.name
     config.result.append(f"{current_dir_name}/")
-    logger.info("Starting directory scan in '%s'.", current_dir_name)
+    logger.info("Starting directory scan in '%s'.", execution_dir)
 
-    scan_directory(Path.cwd(), config, logger)
+    scan_directory(execution_dir, config, logger)
 
-    config.output_filename = generate_output_filename(args, current_dir_name)
-    save_directory_structure(config, logger)
+    structure_filename, log_filename = generate_output_and_log_filenames(
+        args, current_dir_name
+    )
+    structure_path = execution_dir / structure_filename
+    log_path = execution_dir / log_filename
+
+    config.output_filename = structure_filename
+    save_directory_structure(config, logger, structure_path)
 
     if args.logging:
-        save_logs_to_file(log_stream, Path.cwd())
+        log_filename = config.output_filename.replace("_structure.txt", "_log.txt")
+        log_path = execution_dir / log_filename
+        save_logs_to_file(log_stream, log_path)
         log_stream.close()
 
 

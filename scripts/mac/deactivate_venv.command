@@ -7,16 +7,16 @@ cd ../../
 
 if [ ! -d "venv" ]; then
   echo "No virtual environment found. Nothing to deactivate."
-  read -n 1 -s
+  read -p "Press [Enter] to close this window."
   exit 0
 fi
 
 echo "Attempting to deactivate the virtual environment..."
 if [[ -n "$VIRTUAL_ENV" ]]; then
   deactivate
-  echo "Virtual environment deactivated successfully!"
+  echo "Virtual environment deactivated successfully."
 else
   echo "No active virtual environment found."
 fi
 
-read -n 1 -s
+read -p "Press [Enter] to close this window."

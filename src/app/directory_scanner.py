@@ -35,6 +35,14 @@ def scan_directory(directory: Path, config, logger: logging.Logger, prefix=""):
 
     current_ignore_patterns = update_ignore_patterns(directory, config, logger, prefix)
 
+    try:
+        entries = sorted(
+            directory.iterdir(), key=lambda e: (e.is_file(), e.name.lower())
+        )
+    except PermissionError:
+        logger.warning(f"Skipping directory due to permission error: {directory}")
+        return
+
     entries = sorted(directory.iterdir(), key=lambda e: (e.is_file(), e.name.lower()))
     total_entries = len(entries)
 

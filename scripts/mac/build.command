@@ -4,6 +4,8 @@
 set -e
 cd "$(dirname "$0")"
 cd ../../
-python scripts/logic/update_requirements.py
-echo "Done."
-read -n 1 -s
+
+python3 scripts/logic/build_app.py
+
+echo "Build completed."
+read -p "Press [Enter] to close this window."
