@@ -44,11 +44,12 @@ def scan_directory(directory: Path, config, logger: logging.Logger, prefix=""):
         return
 
     entries = sorted(directory.iterdir(), key=lambda e: (e.is_file(), e.name.lower()))
+    root_dir = config.root_dir or directory
     total_entries = len(entries)
 
     for index, path in enumerate(entries):
         connector = "└── " if index == total_entries - 1 else "├── "
-        relative_path = path.relative_to(directory)
+        relative_path = path.relative_to(root_dir)
 
         if is_ignored(
             relative_path, current_ignore_patterns, config.inclusion_rules, logger
