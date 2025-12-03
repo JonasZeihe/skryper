@@ -64,7 +64,7 @@ def initialize_logger(args):
     return logger, log_stream
 
 
-def configure_directory_scanner():
+def configure_directory_scanner(root_dir: Path):
     """
     Configures the directory scanner and loads .gitignore patterns.
 
@@ -72,7 +72,8 @@ def configure_directory_scanner():
         DirectoryScannerConfig: Configured directory scanner.
     """
     config = DirectoryScannerConfig()
-    gitignore_patterns = load_gitignore(Path(".gitignore"))
+    config.root_dir = root_dir
+    gitignore_patterns = load_gitignore(root_dir / ".gitignore")
     config.base_gitignore_paths = set(gitignore_patterns)
     config.base_gitignore_paths.update(config.excluded_files)
     return config
@@ -135,12 +136,13 @@ def main(args=None):
         ctypes.windll.kernel32.SetConsoleOutputCP(65001)
 
     logger, log_stream = initialize_logger(args)
-    config = configure_directory_scanner()
 
     execution_dir = (
         Path(args.root) if args.root else Path(os.path.dirname(sys.executable))
     )
     current_dir_name = execution_dir.name
+
+    config = configure_directory_scanner(execution_dir)
     config.result.append(f"{current_dir_name}/")
     logger.info("Starting directory scan in '%s'.", execution_dir)
 
@@ -150,7 +152,6 @@ def main(args=None):
         args, current_dir_name
     )
     structure_path = execution_dir / structure_filename
-    log_path = execution_dir / log_filename
 
     config.output_filename = structure_filename
     save_directory_structure(config, logger, structure_path)

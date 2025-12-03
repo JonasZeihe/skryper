@@ -19,7 +19,8 @@ during the directory scanning process.
 # config.py
 
 from dataclasses import dataclass, field
-from typing import Set, List
+from pathlib import Path
+from typing import Set, List, Optional
 
 
 @dataclass
@@ -37,6 +38,7 @@ class DirectoryScannerConfig:
     )
     output_filename: str = ""
     result: List[str] = field(default_factory=list)
+    root_dir: Optional[Path] = None
 
 
 def get_default_excluded_files() -> Set[str]:
